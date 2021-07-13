@@ -1,0 +1,28 @@
+
+- hosts: host_id
+  become: yes
+  vars:
+    users:
+    - test1
+      test2
+      test3
+      test4
+  tasks:
+    - name: Create users accounts
+      user:
+        name: "{{ item }}"
+        shell: "/bin/bash"
+      with_items: "{{ users }}"
+
+    - name: Making user`s directories
+      file:
+        path: "/home/{{ item }}/.ssh"
+        state: directory
+      with_items: "{{ users }}"
+
+    - name: Adding ssh keys
+      ansible.builtin.copy:
+        src:  "~/personal_projects/ansible_create_users_and_generate_ssh_keys/create_users_script/ssh_keys/{{ item }}.pub"
+        dest: "/home/{{ item }}/.ssh/authorized_keys"
+      with_items: "{{ users }}"
+        
